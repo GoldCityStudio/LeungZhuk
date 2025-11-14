@@ -1,19 +1,29 @@
-import Link from 'next/link';
-import { getProducts } from '@/lib/db';
-import { initializeSampleData } from '@/lib/initData';
-import ProductCard from '@/components/ProductCard';
+'use client';
+
+import { useState, useEffect } from 'react';
+import { Product } from '@/types';
 import Header from '@/components/Header';
 import ProductList from '@/components/ProductList';
 
-export default async function Home() {
-  // Initialize sample data if needed
-  try {
-    initializeSampleData();
-  } catch (e) {
-    // Data already initialized or error occurred
-  }
-  
-  const products = getProducts();
+export default function Home() {
+  const [products, setProducts] = useState<Product[]>([]);
+  const [loading, setLoading] = useState(true);
+
+  useEffect(() => {
+    const fetchProducts = async () => {
+      try {
+        const { productAPI } = await import('@/lib/apiClient');
+        const data = await productAPI.getAll();
+        setProducts(data.products || []);
+      } catch (error) {
+        console.error('Error fetching products:', error);
+      } finally {
+        setLoading(false);
+      }
+    };
+
+    fetchProducts();
+  }, []);
 
   return (
     <div className="min-h-screen bg-gray-50">
@@ -30,7 +40,14 @@ export default async function Home() {
         </div>
 
         {/* Product List with Category Filter */}
-        <ProductList products={products} />
+        {loading ? (
+          <div className="text-center py-12">
+            <div className="animate-spin rounded-full h-12 w-12 border-b-2 border-primary-600 mx-auto"></div>
+            <p className="mt-4 text-gray-600">載入中...</p>
+          </div>
+        ) : (
+          <ProductList products={products} />
+        )}
       </main>
     </div>
   );

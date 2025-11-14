@@ -23,6 +23,8 @@ export default function CheckoutPage() {
   const { items, getTotal, hydrate } = useCartStore();
   const total = getTotal();
   const [stripeLoaded, setStripeLoaded] = useState(false);
+  const [clientSecret, setClientSecret] = useState<string | null>(null);
+  const [loading, setLoading] = useState(false);
 
   useEffect(() => {
     hydrate();
@@ -30,6 +32,36 @@ export default function CheckoutPage() {
       setStripeLoaded(true);
     }
   }, [hydrate]);
+
+  // Create payment intent when component mounts
+  useEffect(() => {
+    const createPaymentIntent = async () => {
+      if (items.length === 0 || !stripeLoaded) return;
+      
+      setLoading(true);
+      try {
+        const { paymentAPI } = await import('@/lib/apiClient');
+        const { clientSecret } = await paymentAPI.createIntent({
+          items,
+          total,
+          customerInfo: {
+            name: '',
+            email: '',
+            phone: '',
+            address: '',
+          },
+        });
+        setClientSecret(clientSecret);
+      } catch (error) {
+        console.error('Error creating payment intent:', error);
+        alert('無法初始化付款，請重試');
+      } finally {
+        setLoading(false);
+      }
+    };
+
+    createPaymentIntent();
+  }, [items, total, stripeLoaded]);
 
   if (items.length === 0) {
     return (
@@ -76,9 +108,14 @@ export default function CheckoutPage() {
 
           <div className="bg-white rounded-lg shadow-md p-6">
             <h2 className="text-xl font-bold text-gray-900 mb-4">付款資訊</h2>
-            {stripeLoaded && getStripe() ? (
-              <Elements stripe={getStripe()}>
-                <CheckoutForm items={items} total={total} />
+            {loading ? (
+              <div className="text-center py-8">
+                <div className="animate-spin rounded-full h-8 w-8 border-b-2 border-primary-600 mx-auto"></div>
+                <p className="mt-4 text-gray-600">正在初始化付款...</p>
+              </div>
+            ) : stripeLoaded && getStripe() && clientSecret ? (
+              <Elements stripe={getStripe()} options={{ clientSecret }}>
+                <CheckoutForm items={items} total={total} clientSecret={clientSecret} />
               </Elements>
             ) : (
               <div className="text-center py-8">

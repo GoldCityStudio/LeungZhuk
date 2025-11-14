@@ -18,16 +18,63 @@ export default function AdminLoginPage() {
     setLoading(true);
 
     try {
-      // Step 1: Sign in with Firebase (this also ensures user exists in local DB)
-      const result = await signIn(email, password);
+      // Try Firebase Auth first, but fallback to local API if it fails
+      let result;
+      let useLocalAuth = false;
       
+      try {
+        // Set a timeout for Firebase Auth (5 seconds)
+        const firebaseAuthPromise = signIn(email, password);
+        const timeoutPromise = new Promise((_, reject) => 
+          setTimeout(() => reject(new Error('Firebase Auth timeout')), 5000)
+        );
+        
+        result = await Promise.race([firebaseAuthPromise, timeoutPromise]) as any;
+      } catch (firebaseError: any) {
+        console.log('Firebase Auth failed, trying local auth:', firebaseError);
+        useLocalAuth = true;
+      }
+
+      // Fallback to local API authentication if Firebase fails
+      if (useLocalAuth || !result) {
+        const localAuthResponse = await fetch('/api/auth/login', {
+          method: 'POST',
+          headers: {
+            'Content-Type': 'application/json',
+          },
+          body: JSON.stringify({ email, password }),
+        });
+
+        if (!localAuthResponse.ok) {
+          const errorData = await localAuthResponse.json();
+          setError(errorData.error || '登入失敗，請檢查您的帳號和密碼');
+          setLoading(false);
+          return;
+        }
+
+        const localAuthData = await localAuthResponse.json();
+        
+        // Check if user is admin
+        if (localAuthData.user.role !== 'admin') {
+          setError('您沒有管理員權限');
+          setLoading(false);
+          return;
+        }
+
+        // Store token and redirect
+        document.cookie = `admin-token=${localAuthData.token}; path=/; max-age=604800`;
+        router.push('/admin');
+        return;
+      }
+
+      // Firebase Auth succeeded - continue with Firebase flow
       if (!result || !result.user || !result.user.email) {
         setError('無法獲取用戶資訊');
         setLoading(false);
         return;
       }
 
-      // Step 2: Check if user is admin via API
+      // Check if user is admin via API
       const adminCheck = await fetch('/api/auth/check-admin', {
         method: 'POST',
         headers: {
@@ -78,11 +125,11 @@ export default function AdminLoginPage() {
         }
       }
 
-      // Step 3: Store token in cookie
+      // Store token in cookie
       document.cookie = `admin-token=${result.token}; path=/; max-age=604800`; // 7 days
       document.cookie = `firebase-token=${result.token}; path=/; max-age=604800`; // 7 days
       
-      // Step 4: Redirect to admin dashboard
+      // Redirect to admin dashboard
       router.push('/admin');
     } catch (err: any) {
       console.error('Login error:', err);

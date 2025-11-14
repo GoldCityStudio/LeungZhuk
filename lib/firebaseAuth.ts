@@ -1,48 +1,17 @@
-import { 
-  signInWithEmailAndPassword, 
-  createUserWithEmailAndPassword,
-  signOut,
-  User,
-  onAuthStateChanged,
-  getIdToken,
-  getAuth
-} from 'firebase/auth';
-import { initializeApp, getApps } from 'firebase/app';
+// Firebase Auth - uses webpack-friendly dynamic imports
+import { getAuthInstance, loadFirebaseAuth } from './firebaseLoader';
 
-// Initialize Firebase only on client side
-const firebaseConfig = {
-  apiKey: "AIzaSyBPIbIpl6ZKRZB7895uiaP319v9DGO9p8g",
-  authDomain: "fir-vertex-a-i-s-d-saybci.firebaseapp.com",
-  projectId: "firebase-vertex-a-i-s-d-saybci",
-  storageBucket: "firebase-vertex-a-i-s-d-saybci.firebasestorage.app",
-  messagingSenderId: "773451976021",
-  appId: "1:773451976021:web:d9d32bf92a66c37c4cb3dc"
-};
-
-function getAuthInstance() {
+// Sign in with email and password
+export async function signIn(email: string, password: string) {
   if (typeof window === 'undefined') {
     throw new Error('Firebase Auth can only be used on the client side');
   }
   
-  let app;
-  if (getApps().length === 0) {
-    app = initializeApp(firebaseConfig);
-  } else {
-    app = getApps()[0];
-  }
-  
-  return getAuth(app);
-}
-
-const auth = typeof window !== 'undefined' ? getAuthInstance() : null;
-
-// Sign in with email and password
-export async function signIn(email: string, password: string) {
-  if (!auth) {
-    throw new Error('Firebase Auth 未初始化');
-  }
-  
   try {
+    const auth = await getAuthInstance();
+    const firebaseAuth = await loadFirebaseAuth();
+    const { signInWithEmailAndPassword, getIdToken } = firebaseAuth;
+    
     const userCredential = await signInWithEmailAndPassword(auth, email, password);
     const user = userCredential.user;
     
@@ -53,21 +22,25 @@ export async function signIn(email: string, password: string) {
     // Get the user's ID token
     const token = await getIdToken(user);
     
-    // Get or create user in local DB for role management via API
-    const dbResponse = await fetch('/api/auth/get-or-create-user', {
-      method: 'POST',
-      headers: {
-        'Content-Type': 'application/json',
-      },
-      body: JSON.stringify({ email: user.email }),
-    });
-
-    if (!dbResponse.ok) {
-      const dbError = await dbResponse.json();
-      throw new Error(dbError.error || '無法獲取用戶資料');
+    // Get or create user in Firestore for role management
+    const { usersCollection } = await import('./firestore');
+    let userDoc = await usersCollection.getByEmail(user.email);
+    
+    if (!userDoc) {
+      // Special handling for admin accounts
+      let defaultRole = 'user';
+      if (user.email === 'admin@meatshop.com' || user.email === 'manager@meatshop.com') {
+        defaultRole = 'admin';
+      }
+      
+      userDoc = await usersCollection.create({
+        email: user.email,
+        password: '', // No password needed with Firebase
+        role: defaultRole as 'admin' | 'user',
+      });
     }
-
-    const dbData = await dbResponse.json();
+    
+    const dbData = { user: userDoc };
     
     return {
       user: {
@@ -96,27 +69,40 @@ export async function signIn(email: string, password: string) {
 
 // Sign up with email and password
 export async function signUp(email: string, password: string) {
-  if (!auth) {
-    throw new Error('Firebase Auth 未初始化');
+  if (typeof window === 'undefined') {
+    throw new Error('Firebase Auth can only be used on the client side');
   }
   
   try {
+    const auth = await getAuthInstance();
+    const firebaseAuth = await loadFirebaseAuth();
+    const { createUserWithEmailAndPassword, getIdToken } = firebaseAuth;
+    
     const userCredential = await createUserWithEmailAndPassword(auth, email, password);
     const user = userCredential.user;
     
     // Get the user's ID token
     const token = await getIdToken(user);
     
-    // Create user in local DB for role management via API
-    const dbResponse = await fetch('/api/auth/get-or-create-user', {
-      method: 'POST',
-      headers: {
-        'Content-Type': 'application/json',
-      },
-      body: JSON.stringify({ email, role: 'user' }),
-    });
-
-    const dbData = await dbResponse.json();
+    // Create user in Firestore for role management
+    const { usersCollection } = await import('./firestore');
+    let userDoc = await usersCollection.getByEmail(email);
+    
+    if (!userDoc) {
+      // Special handling for admin accounts
+      let defaultRole = 'user';
+      if (email === 'admin@meatshop.com' || email === 'manager@meatshop.com') {
+        defaultRole = 'admin';
+      }
+      
+      userDoc = await usersCollection.create({
+        email: email,
+        password: '', // No password needed with Firebase
+        role: defaultRole as 'admin' | 'user',
+      });
+    }
+    
+    const dbData = { user: userDoc };
     
     return {
       user: {
@@ -133,11 +119,14 @@ export async function signUp(email: string, password: string) {
 
 // Sign out
 export async function signOutUser() {
-  if (!auth) {
-    throw new Error('Firebase Auth 未初始化');
+  if (typeof window === 'undefined') {
+    throw new Error('Firebase Auth can only be used on the client side');
   }
   
   try {
+    const auth = await getAuthInstance();
+    const firebaseAuth = await loadFirebaseAuth();
+    const { signOut } = firebaseAuth;
     await signOut(auth);
   } catch (error: any) {
     throw new Error(error.message || '登出失敗');
@@ -145,29 +134,50 @@ export async function signOutUser() {
 }
 
 // Get current user
-export function getCurrentUser(): User | null {
-  if (!auth) {
+export async function getCurrentUser() {
+  if (typeof window === 'undefined') {
     return null;
   }
-  return auth.currentUser;
+  
+  try {
+    const auth = await getAuthInstance();
+    return auth.currentUser;
+  } catch {
+    return null;
+  }
 }
 
 // Listen to auth state changes
-export function onAuthStateChange(callback: (user: User | null) => void) {
-  if (!auth) {
+export function onAuthStateChange(callback: (user: any | null) => void) {
+  if (typeof window === 'undefined') {
     return () => {};
   }
-  return onAuthStateChanged(auth, callback);
+  
+  // Load Firebase asynchronously and set up listener
+  Promise.all([getAuthInstance(), loadFirebaseAuth()]).then(([auth, firebaseAuth]) => {
+    const { onAuthStateChanged } = firebaseAuth;
+    onAuthStateChanged(auth, callback);
+  }).catch(() => {});
+  
+  return () => {}; // Return unsubscribe function
 }
 
 // Get ID token
 export async function getToken(): Promise<string | null> {
-  if (!auth) {
+  if (typeof window === 'undefined') {
     return null;
   }
-  const user = auth.currentUser;
-  if (!user) return null;
-  return await getIdToken(user);
+  
+  try {
+    const auth = await getAuthInstance();
+    const firebaseAuth = await loadFirebaseAuth();
+    const { getIdToken } = firebaseAuth;
+    const user = auth.currentUser;
+    if (!user) return null;
+    return await getIdToken(user);
+  } catch {
+    return null;
+  }
 }
 
 // Verify ID token (for server-side)
@@ -176,4 +186,3 @@ export async function verifyIdToken(idToken: string) {
   // For now, we'll use a simple approach with the client token
   return { token: idToken };
 }
-

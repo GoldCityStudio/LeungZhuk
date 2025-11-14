@@ -20,6 +20,9 @@ const nextConfig = {
     NEXTAUTH_URL: process.env.NEXTAUTH_URL || 'http://localhost:3000',
     NEXT_PUBLIC_API_URL: process.env.NEXT_PUBLIC_API_URL || '',
   },
+  webpack: (config, { isServer }) => {
+    return config;
+  },
 }
 
 module.exports = nextConfig

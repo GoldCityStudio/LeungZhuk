@@ -43,13 +43,12 @@ export default function AdminDashboard() {
   const fetchData = async () => {
     setLoading(true);
     try {
-      // Always fetch both products and orders for dashboard
-      const [productsRes, ordersRes] = await Promise.all([
-        fetch('/api/products'),
-        fetch('/api/orders'),
+      // Use Firestore API client
+      const { productAPI, orderAPI } = await import('@/lib/apiClient');
+      const [productsData, ordersData] = await Promise.all([
+        productAPI.getAll(),
+        orderAPI.getAll(),
       ]);
-      const productsData = await productsRes.json();
-      const ordersData = await ordersRes.json();
       setProducts(productsData.products || []);
       setOrders(ordersData.orders || []);
     } catch (error) {
@@ -68,18 +67,11 @@ export default function AdminDashboard() {
         stock: parseInt(productForm.stock),
       };
 
+      const { productAPI } = await import('@/lib/apiClient');
       if (editingProduct) {
-        await fetch('/api/products', {
-          method: 'PUT',
-          headers: { 'Content-Type': 'application/json' },
-          body: JSON.stringify({ id: editingProduct.id, ...productData }),
-        });
+        await productAPI.update(editingProduct.id, productData);
       } else {
-        await fetch('/api/products', {
-          method: 'POST',
-          headers: { 'Content-Type': 'application/json' },
-          body: JSON.stringify(productData),
-        });
+        await productAPI.create(productData);
       }
 
       setShowProductModal(false);
@@ -118,7 +110,8 @@ export default function AdminDashboard() {
     if (!confirm('您確定要刪除此產品嗎？')) return;
 
     try {
-      await fetch(`/api/products?id=${id}`, { method: 'DELETE' });
+      const { productAPI } = await import('@/lib/apiClient');
+      await productAPI.delete(id);
       fetchData();
     } catch (error) {
       console.error('Error deleting product:', error);
@@ -128,11 +121,8 @@ export default function AdminDashboard() {
 
   const handleUpdateOrderStatus = async (orderId: string, status: Order['status']) => {
     try {
-      await fetch('/api/orders', {
-        method: 'PUT',
-        headers: { 'Content-Type': 'application/json' },
-        body: JSON.stringify({ id: orderId, status }),
-      });
+      const { orderAPI } = await import('@/lib/apiClient');
+      await orderAPI.update(orderId, { status });
       fetchData();
     } catch (error) {
       console.error('Error updating order:', error);
@@ -156,10 +146,12 @@ export default function AdminDashboard() {
           <button
             onClick={async () => {
               try {
-                await fetch('/api/init-fake-data');
+                const { initializeFakeDataFirestore } = await import('@/lib/initFakeDataFirestore');
+                await initializeFakeDataFirestore();
                 fetchData();
                 alert('假資料已重新初始化！');
               } catch (error) {
+                console.error('Init error:', error);
                 alert('初始化失敗');
               }
             }}

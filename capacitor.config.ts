@@ -6,11 +6,8 @@ const config: CapacitorConfig = {
   webDir: 'out',
   server: {
     androidScheme: 'https',
-    // For production: Set this to your deployed API URL
-    // url: process.env.NEXT_PUBLIC_API_URL || 'https://your-app.vercel.app',
-    // For local development/testing:
-    // url: 'http://YOUR_LOCAL_IP:3000', // Replace YOUR_LOCAL_IP with your computer's IP
-    // cleartext: true, // Only needed for HTTP (not HTTPS)
+    // No server URL needed - using Firestore directly from client
+    // All data operations happen client-side via Firebase
   },
   android: {
     allowMixedContent: true,

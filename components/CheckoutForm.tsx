@@ -13,9 +13,10 @@ import { useRouter } from 'next/navigation';
 interface CheckoutFormProps {
   items: CartItem[];
   total: number;
+  clientSecret?: string;
 }
 
-export default function CheckoutForm({ items, total }: CheckoutFormProps) {
+export default function CheckoutForm({ items, total, clientSecret: initialClientSecret }: CheckoutFormProps) {
   const stripe = useStripe();
   const elements = useElements();
   const router = useRouter();
@@ -39,25 +40,24 @@ export default function CheckoutForm({ items, total }: CheckoutFormProps) {
     setIsProcessing(true);
 
     try {
-      // Create payment intent
-      const response = await fetch('/api/create-payment-intent', {
-        method: 'POST',
-        headers: {
-          'Content-Type': 'application/json',
-        },
-        body: JSON.stringify({
-          items,
-          total,
-          customerInfo,
-        }),
-      });
+      // Use the existing clientSecret from Elements
+      // Customer info will be stored in the order, not in payment intent metadata
+      if (!initialClientSecret) {
+        throw new Error('Payment intent not initialized');
+      }
 
-      const { clientSecret } = await response.json();
+      // Submit the form first to validate payment details
+      const { error: submitError } = await elements.submit();
+      if (submitError) {
+        alert(submitError.message || '請檢查付款資訊');
+        setIsProcessing(false);
+        return;
+      }
 
-      // Confirm payment
+      // Confirm payment with the existing clientSecret
       const { error, paymentIntent } = await stripe.confirmPayment({
         elements,
-        clientSecret,
+        clientSecret: initialClientSecret,
         confirmParams: {
           return_url: `${window.location.origin}/order-success`,
         },
@@ -69,17 +69,16 @@ export default function CheckoutForm({ items, total }: CheckoutFormProps) {
         setIsProcessing(false);
       } else if (paymentIntent && paymentIntent.status === 'succeeded') {
         // Create order
-        await fetch('/api/orders', {
-          method: 'POST',
-          headers: {
-            'Content-Type': 'application/json',
-          },
-          body: JSON.stringify({
-            items,
-            total,
-            customerInfo,
-            paymentIntentId: paymentIntent.id,
-          }),
+        const { orderAPI } = await import('@/lib/apiClient');
+        await orderAPI.create({
+          items,
+          total,
+          customerName: customerInfo.name,
+          customerEmail: customerInfo.email,
+          customerAddress: customerInfo.address,
+          customerPhone: customerInfo.phone,
+          status: 'pending',
+          paymentIntentId: paymentIntent.id,
         });
 
         clearCart();

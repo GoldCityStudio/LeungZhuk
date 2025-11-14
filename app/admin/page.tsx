@@ -24,8 +24,8 @@ export default function AdminPage() {
     }
 
     // Get user email from Firebase auth state
-    import('@/lib/firebaseAuth').then(({ getCurrentUser }) => {
-      const user = getCurrentUser();
+    import('@/lib/firebaseAuth').then(async ({ getCurrentUser }) => {
+      const user = await getCurrentUser();
       if (!user || !user.email) {
         router.push('/admin/login');
         setLoading(false);
