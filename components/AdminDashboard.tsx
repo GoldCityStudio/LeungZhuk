@@ -18,12 +18,20 @@ export default function AdminDashboard() {
   const [loading, setLoading] = useState(true);
   const [showProductModal, setShowProductModal] = useState(false);
   const [editingProduct, setEditingProduct] = useState<Product | null>(null);
-  const [productForm, setProductForm] = useState({
+  const [productForm, setProductForm] = useState<{
+    name: string;
+    description: string;
+    price: string;
+    image: string;
+    category: 'beef' | 'pork' | 'chicken' | 'lamb' | 'seafood' | 'other';
+    stock: string;
+    unit: string;
+  }>({
     name: '',
     description: '',
     price: '',
     image: '',
-    category: 'beef' as const,
+    category: 'beef',
     stock: '',
     unit: 'lb',
   });
