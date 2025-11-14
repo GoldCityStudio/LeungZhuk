@@ -18,7 +18,6 @@ const nextConfig = {
     STRIPE_SECRET_KEY: process.env.STRIPE_SECRET_KEY,
     NEXTAUTH_SECRET: process.env.NEXTAUTH_SECRET || 'your-secret-key-change-in-production',
     NEXTAUTH_URL: process.env.NEXTAUTH_URL || 'http://localhost:3000',
-    // API URL for payment endpoint - set this to your deployed API (e.g., Vercel URL)
     NEXT_PUBLIC_API_URL: process.env.NEXT_PUBLIC_API_URL || '',
   },
   webpack: (config, { isServer }) => {

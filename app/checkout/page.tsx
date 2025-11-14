@@ -52,16 +52,9 @@ export default function CheckoutPage() {
           },
         });
         setClientSecret(clientSecret);
-      } catch (error: any) {
+      } catch (error) {
         console.error('Error creating payment intent:', error);
-        const errorMessage = error.message || '無法初始化付款，請重試';
-        
-        // Show more helpful error message
-        if (errorMessage.includes('server endpoint') || errorMessage.includes('API')) {
-          alert('付款功能需要伺服器端點。請部署 API 到 Vercel 或確保開發伺服器正在運行。\n\nPayment requires a server endpoint. Please deploy the API or ensure the dev server is running.');
-        } else {
-          alert(errorMessage);
-        }
+        alert('無法初始化付款，請重試');
       } finally {
         setLoading(false);
       }

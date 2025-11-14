@@ -37,13 +37,3 @@ next-env.d.ts
 /android
 /ios
 .capacitor
-
-# Firebase
-firebase-debug.log
-firebase-debug.*.log
-.firebase/
-*.log
-
-# Firebase Functions
-functions/lib/
-functions/node_modules/

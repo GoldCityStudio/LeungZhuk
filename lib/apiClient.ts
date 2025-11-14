@@ -138,29 +138,18 @@ export const authAPI = {
 };
 
 // Payment API - still needs server-side for Stripe
-// In static builds (APK), API routes don't work, so we need a deployed endpoint
+// For now, we'll keep this as a placeholder
+// You can deploy a single Firebase Function for this if needed
 export const paymentAPI = {
   createIntent: async (data: any) => {
-    // Check if we're in a static build (APK) - API routes won't work
-    const isStaticBuild = typeof window !== 'undefined' && 
-      (window.location.protocol === 'capacitor:' || 
-       window.location.protocol === 'file:' ||
-       !window.location.origin.includes('localhost'));
-    
-    // Try to use Firebase Function URL or deployed API endpoint
-    // Default Firebase Function URL (will be set after deployment)
-    const firebaseFunctionUrl = 'https://us-central1-firebase-vertex-a-i-s-d-saybci.cloudfunctions.net/createPaymentIntent';
-    const apiBase = process.env.NEXT_PUBLIC_API_URL || 
-      (isStaticBuild ? firebaseFunctionUrl.replace('/createPaymentIntent', '') : 
-       (typeof window !== 'undefined' ? window.location.origin : 'http://localhost:3000'));
-    
-    // Determine the endpoint URL
-    const endpoint = apiBase.includes('cloudfunctions.net') 
-      ? firebaseFunctionUrl  // Firebase Function
-      : `${apiBase}/api/create-payment-intent`;  // Next.js API route
+    // This still needs a server-side endpoint for Stripe
+    // For now, return an error or deploy a Firebase Function
+    const apiBase = typeof window !== 'undefined' 
+      ? (window.location.origin || 'http://localhost:3000')
+      : 'http://localhost:3000';
     
     try {
-      const response = await fetch(endpoint, {
+      const response = await fetch(`${apiBase}/api/create-payment-intent`, {
         method: 'POST',
         headers: {
           'Content-Type': 'application/json',
@@ -169,21 +158,12 @@ export const paymentAPI = {
       });
       
       if (!response.ok) {
-        const errorData = await response.json().catch(() => ({}));
-        throw new Error(errorData.error || 'Failed to create payment intent');
+        throw new Error('Failed to create payment intent');
       }
       
       return await response.json();
-    } catch (error: any) {
+    } catch (error) {
       console.error('Payment intent creation failed:', error);
-      
-      // Provide helpful error message
-      if (error.message?.includes('Failed to fetch') || error.message?.includes('NetworkError')) {
-        throw new Error(
-          '無法連接到付款伺服器。請確保 API 端點已部署或開發伺服器正在運行。'
-        );
-      }
-      
       throw error;
     }
   },
