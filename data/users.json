@@ -1,0 +1,26 @@
+[
+  {
+    "email": "customer1@example.com",
+    "password": "$2a$10$T.2f4nWIZ/fAhTFWs3y0oO4s7YqGbU0I9RIY3K5LykEE4kOG3g1Ie",
+    "role": "user",
+    "id": "1763045549800"
+  },
+  {
+    "email": "customer2@example.com",
+    "password": "$2a$10$sXWFk3zbECvSqd31gqzfN.RqwPr7hR3I.Sowb2Aum3TnMFvAOLhYe",
+    "role": "user",
+    "id": "1763045549802"
+  },
+  {
+    "email": "customer3@example.com",
+    "password": "$2a$10$IAVx0Rl2g8iwy/hLhyMwTeqwqAeYm4zHLBE2HXJFKXNsJw6I3VkQe",
+    "role": "user",
+    "id": "1763045549802"
+  },
+  {
+    "email": "manager@meatshop.com",
+    "password": "$2a$10$j4kSBrVRhPhdQlRPQgwelexXq6sdF9a6UB3SfUPkyQWDkc/Md18qe",
+    "role": "admin",
+    "id": "1763045549802"
+  }
+]

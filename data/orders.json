@@ -1,0 +1,207 @@
+[
+  {
+    "items": [
+      {
+        "product": {
+          "name": "Premium Ribeye Steak",
+          "description": "Tender, marbled ribeye steak, perfect for grilling. USDA Choice grade.",
+          "price": 24.99,
+          "image": "https://images.unsplash.com/photo-1603048297172-c92544798d5a?w=800",
+          "category": "beef",
+          "stock": 50,
+          "unit": "lb",
+          "id": "1763043299745",
+          "createdAt": "2025-11-13T14:14:59.745Z",
+          "updatedAt": "2025-11-13T14:14:59.745Z"
+        },
+        "quantity": 2
+      },
+      {
+        "product": {
+          "name": "Pork Chops",
+          "description": "Thick-cut bone-in pork chops, tender and juicy.",
+          "price": 12.99,
+          "image": "https://images.unsplash.com/photo-1603048297172-c92544798d5a?w=800",
+          "category": "pork",
+          "stock": 75,
+          "unit": "lb",
+          "id": "1763043299747",
+          "createdAt": "2025-11-13T14:14:59.747Z",
+          "updatedAt": "2025-11-13T14:14:59.747Z"
+        },
+        "quantity": 1
+      }
+    ],
+    "total": 62.97,
+    "customerName": "張三",
+    "customerEmail": "customer1@example.com",
+    "customerAddress": "香港中環皇后大道中 100 號",
+    "customerPhone": "+852 9123 4567",
+    "status": "delivered",
+    "paymentIntentId": "pi_fake_001",
+    "id": "1763045549804",
+    "createdAt": "2025-11-09T03:30:00.000Z",
+    "updatedAt": "2025-11-13T14:52:29.804Z"
+  },
+  {
+    "items": [
+      {
+        "product": {
+          "name": "Ground Beef",
+          "description": "Fresh ground beef, 80/20 lean to fat ratio. Great for burgers and meatballs.",
+          "price": 8.99,
+          "image": "https://images.unsplash.com/photo-1603048297172-c92544798d5a?w=800",
+          "category": "beef",
+          "stock": 100,
+          "unit": "lb",
+          "id": "1763043299747",
+          "createdAt": "2025-11-13T14:14:59.747Z",
+          "updatedAt": "2025-11-13T14:14:59.747Z"
+        },
+        "quantity": 3
+      },
+      {
+        "product": {
+          "name": "Lamb Leg",
+          "description": "Whole leg of lamb, perfect for roasting. Premium quality.",
+          "price": 18.99,
+          "image": "https://images.unsplash.com/photo-1603048297172-c92544798d5a?w=800",
+          "category": "lamb",
+          "stock": 30,
+          "unit": "lb",
+          "id": "1763043299747",
+          "createdAt": "2025-11-13T14:14:59.747Z",
+          "updatedAt": "2025-11-13T14:14:59.747Z"
+        },
+        "quantity": 1
+      }
+    ],
+    "total": 45.959999999999994,
+    "customerName": "李四",
+    "customerEmail": "customer2@example.com",
+    "customerAddress": "香港銅鑼灣時代廣場 200 號",
+    "customerPhone": "+852 9234 5678",
+    "status": "shipped",
+    "paymentIntentId": "pi_fake_002",
+    "id": "1763045549804",
+    "createdAt": "2025-11-13T14:52:29.804Z",
+    "updatedAt": "2025-11-13T14:52:29.804Z"
+  },
+  {
+    "items": [
+      {
+        "product": {
+          "name": "Chicken Breast",
+          "description": "Boneless, skinless chicken breast. Lean and protein-rich.",
+          "price": 6.99,
+          "image": "https://images.unsplash.com/photo-1603048297172-c92544798d5a?w=800",
+          "category": "chicken",
+          "stock": 120,
+          "unit": "lb",
+          "id": "1763043299747",
+          "createdAt": "2025-11-13T14:14:59.747Z",
+          "updatedAt": "2025-11-13T14:14:59.747Z"
+        },
+        "quantity": 2
+      },
+      {
+        "product": {
+          "name": "Salmon Fillet",
+          "description": "Fresh Atlantic salmon fillet, rich in omega-3 fatty acids.",
+          "price": 16.99,
+          "image": "https://images.unsplash.com/photo-1603048297172-c92544798d5a?w=800",
+          "category": "seafood",
+          "stock": 40,
+          "unit": "lb",
+          "id": "1763043299747",
+          "createdAt": "2025-11-13T14:14:59.747Z",
+          "updatedAt": "2025-11-13T14:14:59.747Z"
+        },
+        "quantity": 1
+      }
+    ],
+    "total": 30.97,
+    "customerName": "王五",
+    "customerEmail": "customer3@example.com",
+    "customerAddress": "香港尖沙咀彌敦道 300 號",
+    "customerPhone": "+852 9345 6789",
+    "status": "processing",
+    "paymentIntentId": "pi_fake_003",
+    "id": "1763045549805",
+    "createdAt": "2025-11-12T06:30:00.000Z",
+    "updatedAt": "2025-11-13T14:52:29.805Z"
+  },
+  {
+    "items": [
+      {
+        "product": {
+          "name": "Premium Ribeye Steak",
+          "description": "Tender, marbled ribeye steak, perfect for grilling. USDA Choice grade.",
+          "price": 24.99,
+          "image": "https://images.unsplash.com/photo-1603048297172-c92544798d5a?w=800",
+          "category": "beef",
+          "stock": 50,
+          "unit": "lb",
+          "id": "1763043299745",
+          "createdAt": "2025-11-13T14:14:59.745Z",
+          "updatedAt": "2025-11-13T14:14:59.745Z"
+        },
+        "quantity": 1
+      },
+      {
+        "product": {
+          "name": "Beef Brisket",
+          "description": "Whole beef brisket, ideal for slow cooking and smoking.",
+          "price": 14.99,
+          "image": "https://images.unsplash.com/photo-1603048297172-c92544798d5a?w=800",
+          "category": "beef",
+          "stock": 25,
+          "unit": "lb",
+          "id": "1763043299747",
+          "createdAt": "2025-11-13T14:14:59.747Z",
+          "updatedAt": "2025-11-13T14:14:59.747Z"
+        },
+        "quantity": 2
+      }
+    ],
+    "total": 54.97,
+    "customerName": "陳六",
+    "customerEmail": "customer1@example.com",
+    "customerAddress": "香港灣仔軒尼詩道 400 號",
+    "customerPhone": "+852 9456 7890",
+    "status": "pending",
+    "paymentIntentId": "pi_fake_004",
+    "id": "1763045549805",
+    "createdAt": "2025-11-13T14:52:29.805Z",
+    "updatedAt": "2025-11-13T14:52:29.805Z"
+  },
+  {
+    "items": [
+      {
+        "product": {
+          "name": "Pork Chops",
+          "description": "Thick-cut bone-in pork chops, tender and juicy.",
+          "price": 12.99,
+          "image": "https://images.unsplash.com/photo-1603048297172-c92544798d5a?w=800",
+          "category": "pork",
+          "stock": 75,
+          "unit": "lb",
+          "id": "1763043299747",
+          "createdAt": "2025-11-13T14:14:59.747Z",
+          "updatedAt": "2025-11-13T14:14:59.747Z"
+        },
+        "quantity": 4
+      }
+    ],
+    "total": 51.96,
+    "customerName": "趙七",
+    "customerEmail": "customer2@example.com",
+    "customerAddress": "香港旺角彌敦道 500 號",
+    "customerPhone": "+852 9567 8901",
+    "status": "delivered",
+    "paymentIntentId": "pi_fake_005",
+    "id": "1763045549805",
+    "createdAt": "2025-11-13T14:52:29.805Z",
+    "updatedAt": "2025-11-13T14:52:29.805Z"
+  }
+]
