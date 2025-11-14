@@ -4,6 +4,9 @@ import { useState, useEffect } from 'react';
 import { Product } from '@/types';
 import Header from '@/components/Header';
 import ProductList from '@/components/ProductList';
+// Use static import to avoid chunk loading issues in static builds
+import { productAPI } from '@/lib/apiClient';
+import { dummyProducts } from '@/lib/dummyData';
 
 export default function Home() {
   const [products, setProducts] = useState<Product[]>([]);
@@ -12,11 +15,14 @@ export default function Home() {
   useEffect(() => {
     const fetchProducts = async () => {
       try {
-        const { productAPI } = await import('@/lib/apiClient');
         const data = await productAPI.getAll();
-        setProducts(data.products || []);
+        // productAPI.getAll() returns { products: Product[] }
+        const productsList = Array.isArray(data) ? data : (data?.products || []);
+        setProducts(productsList.length > 0 ? productsList : dummyProducts);
       } catch (error) {
         console.error('Error fetching products:', error);
+        // Fallback to dummy data
+        setProducts(dummyProducts);
       } finally {
         setLoading(false);
       }

@@ -8,10 +8,18 @@ export const productsCollection = {
   async getAll(): Promise<Product[]> {
     try {
       const db = await getFirestoreInstance();
+      if (!db) {
+        // Firebase not available, use dummy data
+        return dummyProducts;
+      }
+      
       const { loadFirestore } = await import('./firebaseLoader');
       const firestore = await loadFirestore();
-      const { collection, getDocs } = firestore;
+      if (!firestore) {
+        return dummyProducts;
+      }
       
+      const { collection, getDocs } = firestore;
       const querySnapshot = await getDocs(collection(db, 'products'));
       const products = querySnapshot.docs.map((doc: any) => ({
         id: doc.id,
@@ -27,16 +35,7 @@ export const productsCollection = {
       return products;
     } catch (error: any) {
       // Silently fallback to dummy data - this is expected if Firestore isn't set up or permissions are missing
-      if (error?.message?.includes('Firebase') || 
-          error?.message?.includes('Firestore') || 
-          error?.message?.includes('Failed to resolve') ||
-          error?.message?.includes('Missing or insufficient permissions') ||
-          error?.code === 'permission-denied') {
-        // Firebase not available or permissions issue, use dummy data
-        return dummyProducts;
-      }
-      console.error('Error fetching products from Firestore, using dummy data:', error);
-      // Return dummy data as fallback
+      console.warn('Error fetching products from Firestore, using dummy data:', error);
       return dummyProducts;
     }
   },
@@ -44,10 +43,17 @@ export const productsCollection = {
   async getOne(id: string): Promise<Product | null> {
     try {
       const db = await getFirestoreInstance();
+      if (!db) {
+        return dummyProducts.find(p => p.id === id) || null;
+      }
+      
       const { loadFirestore } = await import('./firebaseLoader');
       const firestore = await loadFirestore();
-      const { doc, getDoc } = firestore;
+      if (!firestore) {
+        return dummyProducts.find(p => p.id === id) || null;
+      }
       
+      const { doc, getDoc } = firestore;
       const docRef = doc(db, 'products', id);
       const docSnap = await getDoc(docRef);
       
@@ -58,17 +64,8 @@ export const productsCollection = {
       // Fallback to dummy data
       return dummyProducts.find(p => p.id === id) || null;
     } catch (error: any) {
-      // Silently fallback to dummy data - this is expected if Firestore isn't set up or permissions are missing
-      if (error?.message?.includes('Firebase') || 
-          error?.message?.includes('Firestore') || 
-          error?.message?.includes('Failed to resolve') ||
-          error?.message?.includes('Missing or insufficient permissions') ||
-          error?.code === 'permission-denied') {
-        // Firebase not available or permissions issue, use dummy data
-        return dummyProducts.find(p => p.id === id) || null;
-      }
-      console.error('Error fetching product from Firestore, checking dummy data:', error);
-      // Fallback to dummy data
+      // Silently fallback to dummy data
+      console.warn('Error fetching product from Firestore, checking dummy data:', error);
       return dummyProducts.find(p => p.id === id) || null;
     }
   },
@@ -76,10 +73,17 @@ export const productsCollection = {
   async create(product: Omit<Product, 'id' | 'createdAt' | 'updatedAt'>): Promise<Product> {
     try {
       const db = await getFirestoreInstance();
+      if (!db) {
+        throw new Error('Firebase is not available. Cannot create product.');
+      }
+      
       const { loadFirestore } = await import('./firebaseLoader');
       const firestore = await loadFirestore();
-      const { collection, addDoc } = firestore;
+      if (!firestore) {
+        throw new Error('Firestore is not available. Cannot create product.');
+      }
       
+      const { collection, addDoc } = firestore;
       const now = new Date().toISOString();
       const newProduct = {
         ...product,
@@ -98,10 +102,17 @@ export const productsCollection = {
   async update(id: string, updates: Partial<Product>): Promise<Product | null> {
     try {
       const db = await getFirestoreInstance();
+      if (!db) {
+        throw new Error('Firebase is not available. Cannot update product.');
+      }
+      
       const { loadFirestore } = await import('./firebaseLoader');
       const firestore = await loadFirestore();
-      const { doc, updateDoc, getDoc } = firestore;
+      if (!firestore) {
+        throw new Error('Firestore is not available. Cannot update product.');
+      }
       
+      const { doc, updateDoc, getDoc } = firestore;
       const docRef = doc(db, 'products', id);
       const docSnap = await getDoc(docRef);
       
@@ -125,10 +136,17 @@ export const productsCollection = {
   async delete(id: string): Promise<boolean> {
     try {
       const db = await getFirestoreInstance();
+      if (!db) {
+        throw new Error('Firebase is not available. Cannot delete product.');
+      }
+      
       const { loadFirestore } = await import('./firebaseLoader');
       const firestore = await loadFirestore();
-      const { doc, deleteDoc } = firestore;
+      if (!firestore) {
+        throw new Error('Firestore is not available. Cannot delete product.');
+      }
       
+      const { doc, deleteDoc } = firestore;
       await deleteDoc(doc(db, 'products', id));
       return true;
     } catch (error) {
@@ -143,10 +161,17 @@ export const ordersCollection = {
   async getAll(): Promise<Order[]> {
     try {
       const db = await getFirestoreInstance();
+      if (!db) {
+        return [];
+      }
+      
       const { loadFirestore } = await import('./firebaseLoader');
       const firestore = await loadFirestore();
-      const { collection, getDocs, query, orderBy } = firestore;
+      if (!firestore) {
+        return [];
+      }
       
+      const { collection, getDocs, query, orderBy } = firestore;
       const q = query(collection(db, 'orders'), orderBy('createdAt', 'desc'));
       const querySnapshot = await getDocs(q);
       return querySnapshot.docs.map((doc: any) => ({
@@ -154,7 +179,7 @@ export const ordersCollection = {
         ...doc.data()
       } as Order));
     } catch (error) {
-      console.error('Error fetching orders:', error);
+      console.warn('Error fetching orders:', error);
       return [];
     }
   },
@@ -162,10 +187,17 @@ export const ordersCollection = {
   async getOne(id: string): Promise<Order | null> {
     try {
       const db = await getFirestoreInstance();
+      if (!db) {
+        return null;
+      }
+      
       const { loadFirestore } = await import('./firebaseLoader');
       const firestore = await loadFirestore();
-      const { doc, getDoc } = firestore;
+      if (!firestore) {
+        return null;
+      }
       
+      const { doc, getDoc } = firestore;
       const docRef = doc(db, 'orders', id);
       const docSnap = await getDoc(docRef);
       
@@ -174,7 +206,7 @@ export const ordersCollection = {
       }
       return null;
     } catch (error) {
-      console.error('Error fetching order:', error);
+      console.warn('Error fetching order:', error);
       return null;
     }
   },
@@ -182,10 +214,17 @@ export const ordersCollection = {
   async create(order: Omit<Order, 'id' | 'createdAt' | 'updatedAt'>): Promise<Order> {
     try {
       const db = await getFirestoreInstance();
+      if (!db) {
+        throw new Error('Firebase is not available. Cannot create order.');
+      }
+      
       const { loadFirestore } = await import('./firebaseLoader');
       const firestore = await loadFirestore();
-      const { collection, addDoc } = firestore;
+      if (!firestore) {
+        throw new Error('Firestore is not available. Cannot create order.');
+      }
       
+      const { collection, addDoc } = firestore;
       const now = new Date().toISOString();
       const newOrder = {
         ...order,
@@ -204,10 +243,17 @@ export const ordersCollection = {
   async update(id: string, updates: Partial<Order>): Promise<Order | null> {
     try {
       const db = await getFirestoreInstance();
+      if (!db) {
+        throw new Error('Firebase is not available. Cannot update order.');
+      }
+      
       const { loadFirestore } = await import('./firebaseLoader');
       const firestore = await loadFirestore();
-      const { doc, updateDoc, getDoc } = firestore;
+      if (!firestore) {
+        throw new Error('Firestore is not available. Cannot update order.');
+      }
       
+      const { doc, updateDoc, getDoc } = firestore;
       const docRef = doc(db, 'orders', id);
       const docSnap = await getDoc(docRef);
       
@@ -234,10 +280,17 @@ export const usersCollection = {
   async getByEmail(email: string): Promise<User | null> {
     try {
       const db = await getFirestoreInstance();
+      if (!db) {
+        return null;
+      }
+      
       const { loadFirestore } = await import('./firebaseLoader');
       const firestore = await loadFirestore();
-      const { collection, query, where, getDocs } = firestore;
+      if (!firestore) {
+        return null;
+      }
       
+      const { collection, query, where, getDocs } = firestore;
       const q = query(collection(db, 'users'), where('email', '==', email));
       const querySnapshot = await getDocs(q);
       
@@ -247,7 +300,7 @@ export const usersCollection = {
       }
       return null;
     } catch (error) {
-      console.error('Error fetching user:', error);
+      console.warn('Error fetching user:', error);
       return null;
     }
   },
@@ -255,10 +308,17 @@ export const usersCollection = {
   async create(user: Omit<User, 'id'>): Promise<User> {
     try {
       const db = await getFirestoreInstance();
+      if (!db) {
+        throw new Error('Firebase is not available. Cannot create user.');
+      }
+      
       const { loadFirestore } = await import('./firebaseLoader');
       const firestore = await loadFirestore();
-      const { collection, addDoc } = firestore;
+      if (!firestore) {
+        throw new Error('Firestore is not available. Cannot create user.');
+      }
       
+      const { collection, addDoc } = firestore;
       const docRef = await addDoc(collection(db, 'users'), user);
       return { id: docRef.id, ...user } as User;
     } catch (error) {
@@ -270,10 +330,17 @@ export const usersCollection = {
   async update(id: string, updates: Partial<User>): Promise<User | null> {
     try {
       const db = await getFirestoreInstance();
+      if (!db) {
+        throw new Error('Firebase is not available. Cannot update user.');
+      }
+      
       const { loadFirestore } = await import('./firebaseLoader');
       const firestore = await loadFirestore();
-      const { doc, updateDoc, getDoc } = firestore;
+      if (!firestore) {
+        throw new Error('Firestore is not available. Cannot update user.');
+      }
       
+      const { doc, updateDoc, getDoc } = firestore;
       const docRef = doc(db, 'users', id);
       const docSnap = await getDoc(docRef);
       

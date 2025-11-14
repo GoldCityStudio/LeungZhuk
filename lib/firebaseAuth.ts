@@ -9,9 +9,16 @@ export async function signIn(email: string, password: string) {
   
   try {
     const auth = await getAuthInstance();
-    const firebaseAuth = await loadFirebaseAuth();
-    const { signInWithEmailAndPassword, getIdToken } = firebaseAuth;
+    if (!auth) {
+      throw new Error('Firebase Auth is not available. Please check your connection.');
+    }
     
+    const firebaseAuth = await loadFirebaseAuth();
+    if (!firebaseAuth) {
+      throw new Error('Firebase Auth is not available. Please check your connection.');
+    }
+    
+    const { signInWithEmailAndPassword, getIdToken } = firebaseAuth;
     const userCredential = await signInWithEmailAndPassword(auth, email, password);
     const user = userCredential.user;
     
@@ -75,7 +82,15 @@ export async function signUp(email: string, password: string) {
   
   try {
     const auth = await getAuthInstance();
+    if (!auth) {
+      throw new Error('Firebase Auth is not available. Please check your connection.');
+    }
+    
     const firebaseAuth = await loadFirebaseAuth();
+    if (!firebaseAuth) {
+      throw new Error('Firebase Auth is not available. Please check your connection.');
+    }
+    
     const { createUserWithEmailAndPassword, getIdToken } = firebaseAuth;
     
     const userCredential = await createUserWithEmailAndPassword(auth, email, password);
@@ -125,11 +140,20 @@ export async function signOutUser() {
   
   try {
     const auth = await getAuthInstance();
+    if (!auth) {
+      return; // Already logged out or Firebase not available
+    }
+    
     const firebaseAuth = await loadFirebaseAuth();
+    if (!firebaseAuth) {
+      return; // Firebase not available
+    }
+    
     const { signOut } = firebaseAuth;
     await signOut(auth);
   } catch (error: any) {
-    throw new Error(error.message || '登出失敗');
+    // Silently fail if Firebase is not available
+    console.warn('Sign out error:', error);
   }
 }
 
@@ -141,6 +165,9 @@ export async function getCurrentUser() {
   
   try {
     const auth = await getAuthInstance();
+    if (!auth) {
+      return null;
+    }
     return auth.currentUser;
   } catch {
     return null;
@@ -155,9 +182,15 @@ export function onAuthStateChange(callback: (user: any | null) => void) {
   
   // Load Firebase asynchronously and set up listener
   Promise.all([getAuthInstance(), loadFirebaseAuth()]).then(([auth, firebaseAuth]) => {
+    if (!auth || !firebaseAuth) {
+      callback(null);
+      return;
+    }
     const { onAuthStateChanged } = firebaseAuth;
     onAuthStateChanged(auth, callback);
-  }).catch(() => {});
+  }).catch(() => {
+    callback(null);
+  });
   
   return () => {}; // Return unsubscribe function
 }
@@ -170,7 +203,15 @@ export async function getToken(): Promise<string | null> {
   
   try {
     const auth = await getAuthInstance();
+    if (!auth) {
+      return null;
+    }
+    
     const firebaseAuth = await loadFirebaseAuth();
+    if (!firebaseAuth) {
+      return null;
+    }
+    
     const { getIdToken } = firebaseAuth;
     const user = auth.currentUser;
     if (!user) return null;

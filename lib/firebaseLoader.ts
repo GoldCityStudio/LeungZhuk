@@ -18,7 +18,7 @@ const firebaseConfig = {
 
 export async function loadFirebaseApp() {
   if (typeof window === 'undefined') {
-    throw new Error('Firebase can only be used on the client side');
+    return null;
   }
 
   if (!firebaseModules.app) {
@@ -27,31 +27,35 @@ export async function loadFirebaseApp() {
       // For static builds, this will be handled by the build config
       firebaseModules.app = await import('firebase/app');
     } catch (error) {
-      console.error('Failed to load Firebase app:', error);
-      throw new Error('Firebase is not available. Please ensure Firebase is installed.');
+      console.warn('Failed to load Firebase app (using dummy data):', error);
+      return null;
     }
   }
 
-  // Initialize app if needed
-  const { getApps, initializeApp } = firebaseModules.app;
-  if (getApps().length === 0) {
-    initializeApp(firebaseConfig);
+  try {
+    // Initialize app if needed
+    const { getApps, initializeApp } = firebaseModules.app;
+    if (getApps().length === 0) {
+      initializeApp(firebaseConfig);
+    }
+    return firebaseModules.app;
+  } catch (error) {
+    console.warn('Failed to initialize Firebase app:', error);
+    return null;
   }
-
-  return firebaseModules.app;
 }
 
 export async function loadFirebaseAuth() {
   if (typeof window === 'undefined') {
-    throw new Error('Firebase Auth can only be used on the client side');
+    return null;
   }
 
   if (!firebaseModules.auth) {
     try {
       firebaseModules.auth = await import('firebase/auth');
     } catch (error) {
-      console.error('Failed to load Firebase auth:', error);
-      throw new Error('Firebase Auth is not available.');
+      console.warn('Failed to load Firebase auth:', error);
+      return null;
     }
   }
 
@@ -60,15 +64,15 @@ export async function loadFirebaseAuth() {
 
 export async function loadFirestore() {
   if (typeof window === 'undefined') {
-    throw new Error('Firestore can only be used on the client side');
+    return null;
   }
 
   if (!firebaseModules.firestore) {
     try {
       firebaseModules.firestore = await import('firebase/firestore');
     } catch (error) {
-      console.error('Failed to load Firestore:', error);
-      throw new Error('Firestore is not available.');
+      console.warn('Failed to load Firestore (using dummy data):', error);
+      return null;
     }
   }
 
@@ -76,16 +80,34 @@ export async function loadFirestore() {
 }
 
 export async function getFirestoreInstance() {
-  const app = await loadFirebaseApp();
-  const firestore = await loadFirestore();
-  const { getFirestore } = firestore;
-  return getFirestore();
+  try {
+    const app = await loadFirebaseApp();
+    if (!app) return null;
+    
+    const firestore = await loadFirestore();
+    if (!firestore) return null;
+    
+    const { getFirestore } = firestore;
+    return getFirestore();
+  } catch (error) {
+    console.warn('Failed to get Firestore instance:', error);
+    return null;
+  }
 }
 
 export async function getAuthInstance() {
-  const app = await loadFirebaseApp();
-  const auth = await loadFirebaseAuth();
-  const { getAuth } = auth;
-  return getAuth();
+  try {
+    const app = await loadFirebaseApp();
+    if (!app) return null;
+    
+    const auth = await loadFirebaseAuth();
+    if (!auth) return null;
+    
+    const { getAuth } = auth;
+    return getAuth();
+  } catch (error) {
+    console.warn('Failed to get Auth instance:', error);
+    return null;
+  }
 }
 
