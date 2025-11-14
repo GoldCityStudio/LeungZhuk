@@ -22,5 +22,29 @@
     "password": "$2a$10$j4kSBrVRhPhdQlRPQgwelexXq6sdF9a6UB3SfUPkyQWDkc/Md18qe",
     "role": "admin",
     "id": "1763045549802"
+  },
+  {
+    "email": "admin@meatshop.com",
+    "password": "$2a$10$34nKD/eNfFnxZ0Kbd3YIG.WYrPnvmtHzxRrOhOcfeFzAAk1vQgP.i",
+    "role": "admin",
+    "id": "1763087930114"
+  },
+  {
+    "email": "demo@example.com",
+    "password": "$2a$10$8A9gcHtEQanBOIJLRO5f7.8Pd6j0oh4q687m4zEYdLOo3GTligEbG",
+    "role": "user",
+    "id": "1763090183631"
+  },
+  {
+    "email": "test@example.com",
+    "password": "$2a$10$wUXFYolze14CL78AWdfEJuGEzHY5rqKJwvdPCnZGX1IKbGOcefsGy",
+    "role": "user",
+    "id": "1763090183634"
+  },
+  {
+    "email": "user@user.com",
+    "password": "",
+    "role": "user",
+    "id": "1763090248234"
   }
 ]

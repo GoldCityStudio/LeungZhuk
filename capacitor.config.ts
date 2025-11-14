@@ -6,9 +6,11 @@ const config: CapacitorConfig = {
   webDir: 'out',
   server: {
     androidScheme: 'https',
-    // For development, you can point to your local server
-    // url: 'http://localhost:3000',
-    // cleartext: true
+    // For production: Set this to your deployed API URL
+    // url: process.env.NEXT_PUBLIC_API_URL || 'https://your-app.vercel.app',
+    // For local development/testing:
+    // url: 'http://YOUR_LOCAL_IP:3000', // Replace YOUR_LOCAL_IP with your computer's IP
+    // cleartext: true, // Only needed for HTTP (not HTTPS)
   },
   android: {
     allowMixedContent: true,

@@ -154,3 +154,16 @@ export function createUser(user: Omit<User, 'id'>): User {
   return newUser;
 }
 
+export function updateUser(id: string, updates: Partial<User>): User | null {
+  const users = getUsers();
+  const index = users.findIndex(u => u.id === id);
+  if (index === -1) return null;
+  
+  users[index] = {
+    ...users[index],
+    ...updates,
+  };
+  saveUsers(users);
+  return users[index];
+}
+

@@ -4,6 +4,7 @@ import { useState, FormEvent, useEffect, Suspense } from 'react';
 import { useRouter, useSearchParams } from 'next/navigation';
 import Link from 'next/link';
 import Header from '@/components/Header';
+import { signIn } from '@/lib/firebaseAuth';
 
 function LoginContent() {
   const router = useRouter();
@@ -27,33 +28,20 @@ function LoginContent() {
     setLoading(true);
 
     try {
-      const response = await fetch('/api/auth/login', {
-        method: 'POST',
-        headers: {
-          'Content-Type': 'application/json',
-        },
-        body: JSON.stringify({ email, password }),
-      });
-
-      const data = await response.json();
-
-      if (!response.ok) {
-        setError(data.error || '登入失敗');
-        setLoading(false);
-        return;
-      }
-
+      const result = await signIn(email, password);
+      
       // Store token in cookie
-      document.cookie = `auth-token=${data.token}; path=/; max-age=604800`; // 7 days
+      document.cookie = `auth-token=${result.token}; path=/; max-age=604800`; // 7 days
+      document.cookie = `firebase-token=${result.token}; path=/; max-age=604800`; // 7 days
       
       // Redirect based on role
-      if (data.user.role === 'admin') {
+      if (result.user.role === 'admin') {
         router.push('/admin');
       } else {
         router.push('/');
       }
-    } catch (err) {
-      setError('發生錯誤，請重試。');
+    } catch (err: any) {
+      setError(err.message || '登入失敗');
       setLoading(false);
     }
   };

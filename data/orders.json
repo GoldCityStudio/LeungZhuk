@@ -203,5 +203,195 @@
     "id": "1763045549805",
     "createdAt": "2025-11-13T14:52:29.805Z",
     "updatedAt": "2025-11-13T14:52:29.805Z"
+  },
+  {
+    "items": [
+      {
+        "product": {
+          "name": "牛小排",
+          "description": "韓式燒烤專用牛小排，肉質鮮嫩，適合燒烤。",
+          "price": 32.99,
+          "image": "https://images.unsplash.com/photo-1603048297172-c92544798d5a?w=800",
+          "category": "beef",
+          "stock": 35,
+          "unit": "lb",
+          "id": "1763045549802",
+          "createdAt": "2025-11-13T14:52:29.802Z",
+          "updatedAt": "2025-11-13T14:52:29.802Z"
+        },
+        "quantity": 1
+      },
+      {
+        "product": {
+          "name": "豬肋排",
+          "description": "美式 BBQ 豬肋排，經過特殊調味，風味獨特。",
+          "price": 19.99,
+          "image": "https://images.unsplash.com/photo-1603048297172-c92544798d5a?w=800",
+          "category": "pork",
+          "stock": 45,
+          "unit": "lb",
+          "id": "1763045549803",
+          "createdAt": "2025-11-13T14:52:29.803Z",
+          "updatedAt": "2025-11-13T14:52:29.803Z"
+        },
+        "quantity": 2
+      }
+    ],
+    "total": 72.97,
+    "customerName": "周八",
+    "customerEmail": "demo@example.com",
+    "customerAddress": "香港觀塘成業街 600 號",
+    "customerPhone": "+852 9678 9012",
+    "status": "processing",
+    "paymentIntentId": "pi_fake_006",
+    "id": "1763090183673",
+    "createdAt": "2025-11-09T07:30:00.000Z",
+    "updatedAt": "2025-11-14T03:16:23.677Z"
+  },
+  {
+    "items": [
+      {
+        "product": {
+          "name": "豬五花肉",
+          "description": "韓式燒烤專用五花肉，肥瘦相間，口感豐富。",
+          "price": 15.99,
+          "image": "https://images.unsplash.com/photo-1603048297172-c92544798d5a?w=800",
+          "category": "pork",
+          "stock": 55,
+          "unit": "lb",
+          "id": "1763045549803",
+          "createdAt": "2025-11-13T14:52:29.803Z",
+          "updatedAt": "2025-11-13T14:52:29.803Z"
+        },
+        "quantity": 1
+      }
+    ],
+    "total": 15.99,
+    "customerName": "吳九",
+    "customerEmail": "test@example.com",
+    "customerAddress": "香港沙田新城市廣場 700 號",
+    "customerPhone": "+852 9789 0123",
+    "status": "shipped",
+    "paymentIntentId": "pi_fake_007",
+    "id": "1763090183680",
+    "createdAt": "2025-11-10T08:30:00.000Z",
+    "updatedAt": "2025-11-14T03:16:23.683Z"
+  },
+  {
+    "items": [
+      {
+        "product": {
+          "name": "Salmon Fillet",
+          "description": "Fresh Atlantic salmon fillet, rich in omega-3 fatty acids.",
+          "price": 16.99,
+          "image": "https://images.unsplash.com/photo-1603048297172-c92544798d5a?w=800",
+          "category": "seafood",
+          "stock": 40,
+          "unit": "lb",
+          "id": "1763043299747",
+          "createdAt": "2025-11-13T14:14:59.747Z",
+          "updatedAt": "2025-11-13T14:14:59.747Z"
+        },
+        "quantity": 3
+      },
+      {
+        "product": {
+          "name": "Pork Shoulder",
+          "description": "Boston butt pork shoulder, perfect for pulled pork.",
+          "price": 9.99,
+          "image": "https://images.unsplash.com/photo-1603048297172-c92544798d5a?w=800",
+          "category": "pork",
+          "stock": 60,
+          "unit": "lb",
+          "id": "1763043299747",
+          "createdAt": "2025-11-13T14:14:59.747Z",
+          "updatedAt": "2025-11-13T14:14:59.747Z"
+        },
+        "quantity": 1
+      }
+    ],
+    "total": 60.96,
+    "customerName": "鄭十",
+    "customerEmail": "customer3@example.com",
+    "customerAddress": "香港屯門市廣場 800 號",
+    "customerPhone": "+852 9890 1234",
+    "status": "delivered",
+    "paymentIntentId": "pi_fake_008",
+    "id": "1763090183686",
+    "createdAt": "2025-11-11T09:30:00.000Z",
+    "updatedAt": "2025-11-14T03:16:23.689Z"
+  },
+  {
+    "items": [
+      {
+        "product": {
+          "name": "和牛牛排",
+          "description": "頂級日本和牛，入口即化，完美的大理石紋理。",
+          "price": 89.99,
+          "image": "https://images.unsplash.com/photo-1603048297172-c92544798d5a?w=800",
+          "category": "beef",
+          "stock": 15,
+          "unit": "lb",
+          "id": "1763045549802",
+          "createdAt": "2025-11-13T14:52:29.802Z",
+          "updatedAt": "2025-11-13T14:52:29.802Z"
+        },
+        "quantity": 2
+      },
+      {
+        "product": {
+          "name": "全雞",
+          "description": "新鮮全雞，適合烤製或燉湯。",
+          "price": 11.99,
+          "image": "https://images.unsplash.com/photo-1603048297172-c92544798d5a?w=800",
+          "category": "chicken",
+          "stock": 20,
+          "unit": "piece",
+          "id": "1763045549803",
+          "createdAt": "2025-11-13T14:52:29.803Z",
+          "updatedAt": "2025-11-13T14:52:29.803Z"
+        },
+        "quantity": 1
+      }
+    ],
+    "total": 191.97,
+    "customerName": "錢十一",
+    "customerEmail": "customer1@example.com",
+    "customerAddress": "香港元朗大棠路 900 號",
+    "customerPhone": "+852 9901 2345",
+    "status": "pending",
+    "paymentIntentId": "pi_fake_009",
+    "id": "1763090183691",
+    "createdAt": "2025-11-12T10:30:00.000Z",
+    "updatedAt": "2025-11-14T03:16:23.695Z"
+  },
+  {
+    "items": [
+      {
+        "product": {
+          "name": "雞翼",
+          "description": "新鮮雞翼，適合烤製或炸製。",
+          "price": 7.99,
+          "image": "https://images.unsplash.com/photo-1603048297172-c92544798d5a?w=800",
+          "category": "chicken",
+          "stock": 80,
+          "unit": "lb",
+          "id": "1763045549803",
+          "createdAt": "2025-11-13T14:52:29.803Z",
+          "updatedAt": "2025-11-13T14:52:29.803Z"
+        },
+        "quantity": 1
+      }
+    ],
+    "total": 7.99,
+    "customerName": "孫十二",
+    "customerEmail": "demo@example.com",
+    "customerAddress": "香港大埔太和路 1000 號",
+    "customerPhone": "+852 9012 3456",
+    "status": "cancelled",
+    "paymentIntentId": "pi_fake_010",
+    "id": "1763090183698",
+    "createdAt": "2025-11-13T11:30:00.000Z",
+    "updatedAt": "2025-11-14T03:16:23.701Z"
   }
 ]

@@ -4,6 +4,7 @@ import { useState, FormEvent } from 'react';
 import { useRouter } from 'next/navigation';
 import Link from 'next/link';
 import Header from '@/components/Header';
+import { signUp } from '@/lib/firebaseAuth';
 
 export default function SignUpPage() {
   const router = useRouter();
@@ -39,30 +40,16 @@ export default function SignUpPage() {
     setLoading(true);
 
     try {
-      const response = await fetch('/api/auth/signup', {
-        method: 'POST',
-        headers: {
-          'Content-Type': 'application/json',
-        },
-        body: JSON.stringify({
-          name: formData.name,
-          email: formData.email,
-          password: formData.password,
-        }),
-      });
-
-      const data = await response.json();
-
-      if (!response.ok) {
-        setError(data.error || '註冊失敗');
-        setLoading(false);
-        return;
-      }
-
-      // Registration successful, redirect to login or home
+      const result = await signUp(formData.email, formData.password);
+      
+      // Store token in cookie
+      document.cookie = `auth-token=${result.token}; path=/; max-age=604800`; // 7 days
+      document.cookie = `firebase-token=${result.token}; path=/; max-age=604800`; // 7 days
+      
+      // Registration successful, redirect to home or login
       router.push('/login?registered=true');
-    } catch (err) {
-      setError('發生錯誤，請重試。');
+    } catch (err: any) {
+      setError(err.message || '註冊失敗');
       setLoading(false);
     }
   };

@@ -7,10 +7,10 @@ export async function POST(req: NextRequest) {
   try {
     const { email, password } = await req.json();
 
-    // Initialize admin user if no users exist
-    const users = getUsers();
-    if (users.length === 0) {
-      const { createUser } = await import('@/lib/db');
+    // Initialize admin user if it doesn't exist
+    const { createUser } = await import('@/lib/db');
+    const adminUser = getUserByEmail('admin@meatshop.com');
+    if (!adminUser) {
       const hashedPassword = await bcrypt.hash('admin123', 10);
       createUser({
         email: 'admin@meatshop.com',

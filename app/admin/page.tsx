@@ -11,36 +11,52 @@ export default function AdminPage() {
   const [loading, setLoading] = useState(true);
 
   useEffect(() => {
-    // Check if user is authenticated
+    // Check if user is authenticated with Firebase
     const token = document.cookie
       .split('; ')
-      .find(row => row.startsWith('admin-token='))
+      .find(row => row.startsWith('firebase-token=') || row.startsWith('admin-token='))
       ?.split('=')[1];
 
     if (!token) {
       router.push('/admin/login');
+      setLoading(false);
       return;
     }
 
-    // Verify token
-    fetch('/api/auth/verify', {
-      headers: {
-        'Authorization': `Bearer ${token}`,
-      },
-    })
-      .then(res => {
-        if (res.ok) {
-          setAuthenticated(true);
-        } else {
-          router.push('/admin/login');
-        }
-      })
-      .catch(() => {
+    // Get user email from Firebase auth state
+    import('@/lib/firebaseAuth').then(({ getCurrentUser }) => {
+      const user = getCurrentUser();
+      if (!user || !user.email) {
         router.push('/admin/login');
-      })
-      .finally(() => {
         setLoading(false);
-      });
+        return;
+      }
+
+      // Verify Firebase token and check admin role
+      fetch('/api/auth/verify-firebase', {
+        method: 'POST',
+        headers: {
+          'Content-Type': 'application/json',
+        },
+        body: JSON.stringify({ token, email: user.email }),
+      })
+        .then(res => {
+          if (res.ok) {
+            setAuthenticated(true);
+          } else {
+            router.push('/admin/login');
+          }
+        })
+        .catch(() => {
+          router.push('/admin/login');
+        })
+        .finally(() => {
+          setLoading(false);
+        });
+    }).catch(() => {
+      router.push('/admin/login');
+      setLoading(false);
+    });
   }, [router]);
 
   if (loading) {
